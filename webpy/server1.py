@@ -127,19 +127,19 @@ class index:
     def GET(self):
 
         gyro_scaled_x, gyro_scaled_y, gyro_scaled_z, accel_scaled_x, accel_scaled_y, accel_scaled_z = readall()
-        return str(get_x_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z)+" "+str(get_y_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z)))
+        return str(get_x_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z))+" "+str(get_y_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z))
 
-        """
-        accel_xout = read_word_2c(0x3b)
-        accel_yout = read_word_2c(0x3d)
-        accel_zout = read_word_2c(0x3f)
+        
+        #accel_xout = read_word_2c(0x3b)
+        #accel_yout = read_word_2c(0x3d)
+        #accel_zout = read_word_2c(0x3f)
 
-        accel_xout_scaled = accel_xout / 16384.0
-        accel_yout_scaled = accel_yout / 16384.0
-        accel_zout_scaled = accel_zout / 16384.0
+        #accel_xout_scaled = accel_xout / 16384.0
+        #accel_yout_scaled = accel_yout / 16384.0
+        #accel_zout_scaled = accel_zout / 16384.0
 
-        return str(get_x_rotation(accel_xout_scaled, accel_yout_scaled, accel_zout_scaled))+" "+str(get_y_rotation(accel_xout_scaled, accel_yout_scaled, accel_zout_scaled))
-        """
+        #return str(get_x_rotation(accel_xout_scaled, accel_yout_scaled, accel_zout_scaled))+" "+str(get_y_rotation(accel_xout_scaled, accel_yout_scaled, accel_zout_scaled))
+        
 
 if __name__ == "__main__":
 
