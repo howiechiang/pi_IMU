@@ -61,6 +61,8 @@ def kalman_filter():
         last_x = K * (last_x + gyro_x_delta) + (K1 * rotation_x)
         last_y = K * (last_y + gyro_y_delta) + (K1 * rotation_y)
 
+        return last_x, last_y
+
 
 def readall():
     raw_gyro_data = bus.read_i2c_block_data(address, gyro_address, 6)
@@ -127,8 +129,9 @@ class index:
     def GET(self):
 
         gyro_scaled_x, gyro_scaled_y, gyro_scaled_z, accel_scaled_x, accel_scaled_y, accel_scaled_z = readall()
-        return str(get_x_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z))+" "+str(get_y_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z))
-
+        #return str(get_x_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z))+" "+str(get_y_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z))
+        last_x, last_y = kalman_filter()
+        return str(last_x) + " " + str(last_y)
         
         #accel_xout = read_word_2c(0x3b)
         #accel_yout = read_word_2c(0x3d)
