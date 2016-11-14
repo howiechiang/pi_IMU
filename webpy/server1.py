@@ -34,13 +34,17 @@ def kalman_filter():
 
     last_x = get_x_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z)
     last_y = get_y_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z)
+    last_z = get_z_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z)
 
     gyro_offset_x = gyro_scaled_x
     gyro_offset_y = gyro_scaled_y
+    gyro_offset_z = gyro_scaled_z
 
     gyro_total_x = last_x - gyro_offset_x
     gyro_total_y = last_y - gyro_offset_y
+    gyro_total_z = last_z - gyro_offset_z
 
+    # Please have someone explain why this needs to be in a loop and why 0.005 is subtracked frmo time_diff
     for i in range(0, int(3.0 / time_diff)):
         time.sleep(time_diff - 0.005)
 
@@ -48,20 +52,25 @@ def kalman_filter():
 
         gyro_scaled_x -= gyro_offset_x
         gyro_scaled_y -= gyro_offset_y
+        gyro_scaled_z -= gyro_offset_z
 
         gyro_x_delta = (gyro_scaled_x * time_diff)
         gyro_y_delta = (gyro_scaled_y * time_diff)
+        gyro_z_delta = (gyro_scaled_z * time_diff)
 
         gyro_total_x += gyro_x_delta
         gyro_total_y += gyro_y_delta
+        gyro_total_z += gyro_z_delta
 
         rotation_x = get_x_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z)
         rotation_y = get_y_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z)
+        rotation_z = get_z_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z)
 
         last_x = K * (last_x + gyro_x_delta) + (K1 * rotation_x)
         last_y = K * (last_y + gyro_y_delta) + (K1 * rotation_y)
+        last_z = K * (last_z + gyro_z_delta) + (K1 * rotation_z)
 
-        return last_x, last_y
+        return last_x, last_y, last_z
 
 
 def readall():
@@ -130,8 +139,8 @@ class index:
 
         gyro_scaled_x, gyro_scaled_y, gyro_scaled_z, accel_scaled_x, accel_scaled_y, accel_scaled_z = readall()
         #return str(get_x_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z))+" "+str(get_y_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z))
-        last_x, last_y = kalman_filter()
-        return str(last_x) + " " + str(last_y)
+        last_x, last_y, last_z = kalman_filter()
+        return str(last_x) + " " + str(last_y) + " " + str(last_z)
         
         #accel_xout = read_word_2c(0x3b)
         #accel_yout = read_word_2c(0x3d)
