@@ -20,7 +20,9 @@ bus = smbus.SMBus(1) # or bus = smbus.SMBus(1) for Revision 2 boards
 address = 0x68       # This is the address value read via the i2cdetect command
 gyro_address = 0x43
 accel_address = 0x3b
-
+# x_data_address = [0 1]
+# y_data_address = [2 3]
+# z_data_address = [4 5]
 
 def kalman_filter():
     # Kalman's Filter Settings
@@ -74,6 +76,7 @@ def kalman_filter():
 
 
 def readall():
+
     raw_gyro_data = bus.read_i2c_block_data(address, gyro_address, 6)
     raw_accel_data = bus.read_i2c_block_data(address, accel_address, 6)
 
