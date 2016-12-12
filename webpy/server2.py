@@ -72,6 +72,7 @@ def calibrate_comp():
         if y_out > maxy:
             maxy = y_out
 
+        print " minx: %.2f,   miny: %.2f,    maxx: %.2f,   maxy: %.2f" % minx, miny, maxx, maxy
         time.sleep(0.1)
 
     # X & Y offset are calculated by the average of min & max
@@ -104,7 +105,7 @@ def kalman_filter():
     now = time.time()
 
     # Read raw gyro & accel data from sensors
-    gyro_scaled_x, gyro_scaled_y, gyro_scaled_z, accel_scaled_x, accel_scaled_y, accel_scaled_z = readall()
+    gyro_scaled_x, gyro_scaled_y, gyro_scaled_z, accel_scaled_x, accel_scaled_y, accel_scaled_z = readall_imu()
 
     # Convert accel data to rotation data
     last_x = get_x_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z)
@@ -125,7 +126,7 @@ def kalman_filter():
         time.sleep(time_diff - 0.005)
 
         # Read raw gyro & accel data from sensors
-        gyro_scaled_x, gyro_scaled_y, gyro_scaled_z, accel_scaled_x, accel_scaled_y, accel_scaled_z = readall_IMU()
+        gyro_scaled_x, gyro_scaled_y, gyro_scaled_z, accel_scaled_x, accel_scaled_y, accel_scaled_z = readall_imu()
 
         # Subtract offset(first set of read gyro data) from raw gyro data
         gyro_scaled_x -= gyro_offset_x
@@ -245,7 +246,7 @@ def write_byte(adr, value):
 class index:
     def GET(self):
 
-        gyro_scaled_x, gyro_scaled_y, gyro_scaled_z, accel_scaled_x, accel_scaled_y, accel_scaled_z = readall()
+        #gyro_scaled_x, gyro_scaled_y, gyro_scaled_z, accel_scaled_x, accel_scaled_y, accel_scaled_z = readall_imu()
         #return str(get_x_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z))+" "+str(get_y_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z))
         last_x, last_y, last_z = kalman_filter()
         last_comp_z = comp_rotation(comp_offset[0], comp_offset[1])
