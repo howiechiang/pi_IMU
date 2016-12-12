@@ -5,25 +5,40 @@ import smbus
 import math
 import time
 
+
+########################################################################################################################
+# Web Variables
+########################################################################################################################
 urls = (
     '/', 'index'
 )
 
+########################################################################################################################
+# VARIABLES
+########################################################################################################################
 # Power management registers
 power_mgmt_1 = 0x6b
 power_mgmt_2 = 0x6c
 
+# Sensor Scaling Values
 gyro_scale = 131.0
 accel_scale = 16384.0
+comp_scale = 0.92
 
-bus = smbus.SMBus(1) # or bus = smbus.SMBus(1) for Revision 2 boards
-address = 0x68       # This is the address value read via the i2cdetect command
+# Address Declaration
+bus = smbus.SMBus(1)    # or bus = smbus.SMBus(1) for Revision 2 boards
+address = 0x68          # This is the address value read via the i2cdetect command
 gyro_address = 0x43
 accel_address = 0x3b
+comp_address = 0x1e
 # x_data_address = [0 1]
 # y_data_address = [2 3]
 # z_data_address = [4 5]
 
+
+########################################################################################################################
+# FUNCTIONS
+########################################################################################################################
 def kalman_filter():
     # Kalman's Filter Settings
     K = 0.98
