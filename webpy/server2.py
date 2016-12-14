@@ -177,9 +177,9 @@ def readall_comp():
 
     raw_comp_data = bus.read_i2c_block_data(i2c_address, comp_address, 9)
 
-    comp_scaled_x = twos_compliment((raw_comp_data[3] << 8 + raw_comp_data[4]) * comp_scale)
-    comp_scaled_y = twos_compliment((raw_comp_data[7] << 8 + raw_comp_data[8]) * comp_scale)
-    comp_scaled_z = twos_compliment((raw_comp_data[5] << 8 + raw_comp_data[6]) * comp_scale)
+    comp_scaled_x = read_word_2c(comp_address, 3) * comp_scale
+    comp_scaled_y = read_word_2c(comp_address, 5) * comp_scale
+    comp_scaled_z = read_word_2c(comp_address, 7) * comp_scale
 
     return comp_scaled_x, comp_scaled_y, comp_scaled_z
 
@@ -220,19 +220,19 @@ def get_comp_rotation(x, y):
 
 
 # i2C Read/Write Register Functions
-def read_byte(adr):
-    return bus.read_byte_data(i2c_address, adr)
+def read_byte(address, adr):
+    return bus.read_byte_data(address, adr)
 
 
-def read_word(adr):
-    high = bus.read_byte_data(i2c_address, adr)
-    low = bus.read_byte_data(i2c_address, adr+1)
+def read_word(address, adr):
+    high = bus.read_byte_data(address, adr)
+    low = bus.read_byte_data(address, adr+1)
     val = (high << 8) + low
     return val
 
 
-def read_word_2c(adr):
-    val = read_word(adr)
+def read_word_2c(address, adr):
+    val = read_word(address, adr)
     if val >= 0x8000:
         return -((65535 - val) + 1)
     else:
