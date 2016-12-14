@@ -72,7 +72,7 @@ def calibrate_comp():
         if y_out > maxy:
             maxy = y_out
 
-        print " minx: %.2f,   miny: %.2f,    maxx: %.2f,   maxy: %.2f" % minx, miny, maxx, maxy
+        print minx, miny, maxx, maxy
         time.sleep(0.1)
 
     # X & Y offset are calculated by the average of min & max
@@ -175,11 +175,11 @@ def readall_imu():
 
 def readall_comp():
 
-    raw_comp_data = bus.read_i2c_block_data(i2c_address, comp_address, 8)
+    raw_comp_data = bus.read_i2c_block_data(i2c_address, comp_address, 9)
 
-    comp_scaled_x = twos_compliment(raw_comp_data[3] << 8 + raw_comp_data[4] * comp_scale)
-    comp_scaled_y = twos_compliment(raw_comp_data[7] << 8 + raw_comp_data[8] * comp_scale)
-    comp_scaled_z = twos_compliment(raw_comp_data[5] << 8 + raw_comp_data[6] * comp_scale)
+    comp_scaled_x = twos_compliment((raw_comp_data[3] << 8 + raw_comp_data[4]) * comp_scale)
+    comp_scaled_y = twos_compliment((raw_comp_data[7] << 8 + raw_comp_data[8]) * comp_scale)
+    comp_scaled_z = twos_compliment((raw_comp_data[5] << 8 + raw_comp_data[6]) * comp_scale)
 
     return comp_scaled_x, comp_scaled_y, comp_scaled_z
 
