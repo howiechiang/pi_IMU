@@ -10,31 +10,17 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="DockManager">
-    <window id="1">
+    <window id="2">
       <content type="file-editors">
         <state>
           <leaf>
-            <file leaf-file-name="IMU_I2C.py" pinned="false" current-in-tab="true">
-              <entry file="file://$PROJECT_DIR$/IMU_I2C.py">
+            <file leaf-file-name="socket_WifiHTTP.py" pinned="false" current-in-tab="true">
+              <entry file="file://$PROJECT_DIR$/socket_WifiHTTP.py">
                 <provider selected="true" editor-type-id="text-editor">
-                  <state relative-caret-position="510">
-                    <caret line="30" column="26" lean-forward="true" selection-start-line="30" selection-start-column="26" selection-end-line="30" selection-end-column="26" />
+                  <state relative-caret-position="408">
+                    <caret line="24" column="13" lean-forward="true" selection-start-line="24" selection-start-column="13" selection-end-line="24" selection-end-column="13" />
                     <folding>
-                      <element signature="e#19#31#0" expanded="true" />
-                      <element signature="e#1321#1842#0" expanded="false" />
-                      <element signature="e#2200#2320#0" expanded="false" />
-                      <element signature="e#2361#2612#0" expanded="false" />
-                      <element signature="e#2744#2881#0" expanded="false" />
-                      <element signature="e#2962#3090#0" expanded="false" />
-                      <element signature="e#3165#4012#0" expanded="false" />
-                      <element signature="e#4180#5801#0" expanded="false" />
-                      <element signature="e#5495#5518#0" expanded="false" />
-                      <element signature="e#5841#6328#0" expanded="false" />
-                      <element signature="e#6637#6720#0" expanded="false" />
-                      <element signature="e#6778#6813#0" expanded="false" />
-                      <element signature="e#6849#6918#0" expanded="false" />
-                      <element signature="e#6954#7022#0" expanded="false" />
-                      <element signature="e#7056#7123#0" expanded="false" />
+                      <element signature="e#19#29#0" expanded="true" />
                     </folding>
                   </state>
                 </provider>
@@ -61,9 +47,11 @@
       <file leaf-file-name="server2.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/webpy/server2.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1322">
-              <caret line="157" column="0" lean-forward="true" selection-start-line="157" selection-start-column="0" selection-end-line="157" selection-end-column="0" />
-              <folding />
+            <state relative-caret-position="4488">
+              <caret line="264" column="8" lean-forward="true" selection-start-line="264" selection-start-column="8" selection-end-line="264" selection-end-column="8" />
+              <folding>
+                <element signature="e#19#29#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -71,8 +59,8 @@
       <file leaf-file-name="server1.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/webpy/server1.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="119">
-              <caret line="70" column="21" lean-forward="true" selection-start-line="70" selection-start-column="21" selection-end-line="70" selection-end-column="21" />
+            <state relative-caret-position="-2410">
+              <caret line="13" column="1" lean-forward="true" selection-start-line="13" selection-start-column="1" selection-end-line="13" selection-end-column="1" />
               <folding />
             </state>
           </provider>
@@ -81,9 +69,34 @@
       <file leaf-file-name="server.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/webpy/server.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="765">
-              <caret line="47" column="18" lean-forward="true" selection-start-line="47" selection-start-column="18" selection-end-line="47" selection-end-column="18" />
+            <state relative-caret-position="528">
+              <caret line="55" column="0" lean-forward="true" selection-start-line="55" selection-start-column="0" selection-end-line="55" selection-end-column="0" />
               <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="IMU_I2C.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/IMU_I2C.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="293">
+              <caret line="58" column="57" lean-forward="false" selection-start-line="58" selection-start-column="57" selection-end-line="58" selection-end-column="57" />
+              <folding>
+                <element signature="e#19#31#0" expanded="true" />
+                <element signature="e#2200#2320#0" expanded="false" />
+                <element signature="e#2361#2612#0" expanded="false" />
+                <element signature="e#2744#2881#0" expanded="false" />
+                <element signature="e#2962#3090#0" expanded="false" />
+                <element signature="e#3165#4012#0" expanded="false" />
+                <element signature="e#4180#5801#0" expanded="false" />
+                <element signature="e#5495#5518#0" expanded="false" />
+                <element signature="e#5841#6328#0" expanded="false" />
+                <element signature="e#6637#6720#0" expanded="false" />
+                <element signature="e#6778#6813#0" expanded="false" />
+                <element signature="e#6849#6918#0" expanded="false" />
+                <element signature="e#6954#7022#0" expanded="false" />
+                <element signature="e#7056#7123#0" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -113,6 +126,7 @@
         <option value="$PROJECT_DIR$/I2C_IM.py" />
         <option value="$PROJECT_DIR$/readIMU.py" />
         <option value="$PROJECT_DIR$/IMU_I2C.py" />
+        <option value="$PROJECT_DIR$/socket_WifiHTTP.py" />
       </list>
     </option>
   </component>
@@ -146,20 +160,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="pi_IMU" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pi_IMU" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pi_IMU" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="webpy" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -267,7 +267,7 @@
     <frame x="953" y="0" width="974" height="1047" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.23960613" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.23960613" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -302,7 +302,7 @@
         <state relative-caret-position="306">
           <caret line="18" column="0" lean-forward="false" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
           <folding>
-            <element signature="e#20#32#0" expanded="true" />
+            <element signature="e#20#32#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -323,20 +323,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/webpy/server2.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1322">
-          <caret line="157" column="0" lean-forward="true" selection-start-line="157" selection-start-column="0" selection-end-line="157" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/readIMU.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1122">
           <caret line="66" column="0" lean-forward="true" selection-start-line="66" selection-start-column="0" selection-end-line="66" selection-end-column="0" />
           <folding>
-            <element signature="e#20#32#0" expanded="true" />
+            <element signature="e#20#32#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -349,29 +341,22 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/webpy/server.py">
+    <entry file="file://$PROJECT_DIR$/webpy/server2.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="765">
-          <caret line="47" column="18" lean-forward="true" selection-start-line="47" selection-start-column="18" selection-end-line="47" selection-end-column="18" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/webpy/server1.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="70" column="21" lean-forward="true" selection-start-line="70" selection-start-column="21" selection-end-line="70" selection-end-column="21" />
-          <folding />
+        <state relative-caret-position="4488">
+          <caret line="264" column="8" lean-forward="true" selection-start-line="264" selection-start-column="8" selection-end-line="264" selection-end-column="8" />
+          <folding>
+            <element signature="e#19#29#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/IMU_I2C.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="510">
-          <caret line="30" column="26" lean-forward="true" selection-start-line="30" selection-start-column="26" selection-end-line="30" selection-end-column="26" />
+        <state relative-caret-position="293">
+          <caret line="58" column="57" lean-forward="false" selection-start-line="58" selection-start-column="57" selection-end-line="58" selection-end-column="57" />
           <folding>
             <element signature="e#19#31#0" expanded="true" />
-            <element signature="e#1321#1842#0" expanded="false" />
             <element signature="e#2200#2320#0" expanded="false" />
             <element signature="e#2361#2612#0" expanded="false" />
             <element signature="e#2744#2881#0" expanded="false" />
@@ -385,6 +370,32 @@
             <element signature="e#6849#6918#0" expanded="false" />
             <element signature="e#6954#7022#0" expanded="false" />
             <element signature="e#7056#7123#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/webpy/server.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="528">
+          <caret line="55" column="0" lean-forward="true" selection-start-line="55" selection-start-column="0" selection-end-line="55" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/webpy/server1.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2410">
+          <caret line="13" column="1" lean-forward="true" selection-start-line="13" selection-start-column="1" selection-end-line="13" selection-end-column="1" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/socket_WifiHTTP.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="408">
+          <caret line="24" column="13" lean-forward="true" selection-start-line="24" selection-start-column="13" selection-end-line="24" selection-end-column="13" />
+          <folding>
+            <element signature="e#19#29#0" expanded="true" />
           </folding>
         </state>
       </provider>
