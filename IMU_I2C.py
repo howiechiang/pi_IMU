@@ -42,7 +42,7 @@ class IMU():
         self.bus = smbus.SMBUS(1)           # or bus = smbus.SMBus(1) for Revision 2 boards
 
         # Now wake the 6050 up as it starts in sleep mode
-        self.bus.write_byte_data(addr_imu, power_mgmt_1, 0)
+        self.bus.write_byte_data(addr, power_mgmt_1, 0)
 
         self.xRotation = None
         self.yRotation = None
