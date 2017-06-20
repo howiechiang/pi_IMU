@@ -1,6 +1,5 @@
 #!/usr/bin/python
 
-from __future__ import print_function
 import smbus
 import math
 import time
@@ -123,7 +122,7 @@ class IMU():
 
         # Update Time
         tNow = time.time()
-        dt = tNow - self.tLastUpdated
+        dt = tNow - self.tLastUpdated or 0
         self.tLastUpdated = tNow
 
         gyro_xScaled, gyro_yScaled, gyro_zScaled, accel_xScaled, accel_yScaled, accel_zScaled \
@@ -209,36 +208,47 @@ if __name__ == "__main__":
     stdscr = curses.initscr()
 
     while True:
+	try:
+
+	    stdscr.clear()
+
+            #### GYRO DATA ####
+    	    gyro_xout = imu1.read_word_2c(addr_x_gyro)
+    	    gyro_yout = imu1.read_word_2c(addr_y_gyro)
+    	    gyro_zout = imu1.read_word_2c(addr_z_gyro)
 	
-	stdscr.clear()
+       	    stdscr.addstr("Raw gyro data\n------------------\n")
+    	    stdscr.addstr("gyro_xout: " + str(gyro_xout) + " scaled: " + str(gyro_xout / gyro_scale) + "\n")
+    	    stdscr.addstr("gyro_yout: " + str(gyro_yout) + " scaled: " + str(gyro_yout / gyro_scale) + "\n")
+    	    stdscr.addstr("gyro_zout: " + str(gyro_zout) + " scaled: " + str(gyro_zout / gyro_scale) + "\n")
+	    stdscr.addstr("\n")	
 
-        #### GYRO DATA ####
-    	gyro_xout = imu1.read_word_2c(addr_x_gyro)
-    	gyro_yout = imu1.read_word_2c(addr_y_gyro)
-    	gyro_zout = imu1.read_word_2c(addr_z_gyro)
+    	    #### ACCELEROMETER DATA ####
+    	    accel_xout = imu1.read_word_2c(addr_x_accel)
+    	    accel_yout = imu1.read_word_2c(addr_y_accel)
+    	    accel_zout = imu1.read_word_2c(addr_z_accel)
+    	
+            stdscr.addstr("Raw accelerometer data\n------------------\n")
+    	    stdscr.addstr("accel_xout: " + str(accel_xout) + " scaled: " + str(accel_xout / accel_scale) + "\n")
+    	    stdscr.addstr("accel_yout: " + str(accel_yout) + " scaled: " + str(accel_yout / accel_scale) + "\n")
+    	    stdscr.addstr("accel_zout: " + str(accel_zout) + " scaled: " + str(accel_zout / accel_scale) + "\n")
+	    stdscr.addstr("\n")	
+
+    	    #### CALCULATED ROTATION DATA ####
+    	    stdscr.addstr("Rotation\n------------------\n")
+    	    stdscr.addstr("x rotation: " + str(get_x_rotation(accel_xout / accel_scale, accel_yout / accel_scale, accel_zout / accel_scale)) + "\n")
+    	    stdscr.addstr("y rotation: " + str(get_y_rotation(accel_xout / accel_scale, accel_yout / accel_scale, accel_zout / accel_scale)) + "\n")
+	    stdscr.addstr("\n")	
 	
-	stdscr.addstr("Raw gyro data\n------------------\n")
-    	stdscr.addstr("gyro_xout: " + str(gyro_xout) + " scaled: " + str(gyro_xout / gyro_scale) + "\n")
-    	stdscr.addstr("gyro_yout: " + str(gyro_yout) + " scaled: " + str(gyro_yout / gyro_scale) + "\n")
-    	stdscr.addstr("gyro_zout: " + str(gyro_zout) + " scaled: " + str(gyro_zout / gyro_scale) + "\n")
-	stdscr.addstr("\n")	
-
-    	#### ACCELEROMETER DATA ####
-    	accel_xout = imu1.read_word_2c(addr_x_accel)
-    	accel_yout = imu1.read_word_2c(addr_y_accel)
-    	accel_zout = imu1.read_word_2c(addr_z_accel)
-
-    	stdscr.addstr("Raw accelerometer data\n------------------\n")
-    	stdscr.addstr("accel_xout: " + str(accel_xout) + " scaled: " + str(accel_xout / accel_scale) + "\n")
-    	stdscr.addstr("accel_yout: " + str(accel_yout) + " scaled: " + str(accel_yout / accel_scale) + "\n")
-    	stdscr.addstr("accel_zout: " + str(accel_zout) + " scaled: " + str(accel_zout / accel_scale) + "\n")
-	stdscr.addstr("\n")	
-
-    	#### CALCULATED ROTATION DATA ####
-    	stdscr.addstr("Rotation\n------------------\n")
-    	stdscr.addstr("x rotation: " + str(get_x_rotation(accel_xout / accel_scale, accel_yout / accel_scale, accel_zout / accel_scale)) + "\n")
-    	stdscr.addstr("y rotation: " + str(get_y_rotation(accel_xout / accel_scale, accel_yout / accel_scale, accel_zout / accel_scale)) + "\n")
-	stdscr.addstr("\n")	
+	    stdscr.refresh()
+	    time.sleep(1)
 	
-	stdscr.refresh()
-	time.sleep(1)
+	except:	
+	    stdscr.keypad(0)
+	    curses.echo()
+	    curses.nocbreak()	    
+	    curses.endwin()
+	
+#curses.nocbreak();stdscr.keypad(0);curses.echo();curses.endwin()
+
+	
