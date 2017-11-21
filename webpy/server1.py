@@ -158,7 +158,7 @@ class index:
         gyro_scaled_x, gyro_scaled_y, gyro_scaled_z, accel_scaled_x, accel_scaled_y, accel_scaled_z = readall()
         #return str(get_x_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z))+" "+str(get_y_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z))
         last_x, last_y, last_z = kalman_filter()
-        return str(last_x) + " " + str(last_y) + " " + str(last_z)
+        return str(str(last_x) + " " + str(last_y) + " " + str(last_z))
         
         #accel_xout = read_word_2c(0x3b)
         #accel_yout = read_word_2c(0x3d)

@@ -32,11 +32,11 @@ def get_z_rotation(x,y,z):
     radians = math.atan2(z, dist(x,y))
     return math.degrees(radians)
 
-def get_CompassRotation(x, y):
+def get_CompassBearing(x, y):
 
-    radians = math.atan2(y, x)
-    if radians < 0:
-        radians += 2 * math.pi
+    bearing = math.atan2(y, x)
+    if bearing < 0:
+        bearing += 2 * math.pi
     return math.degrees(radians)
 
 ########################################################################################################################

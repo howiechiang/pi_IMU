@@ -46,9 +46,9 @@ class IMU():
         # Now wake the 6050 up as it starts in sleep mode
         self.bus.write_byte_data(addr, power_mgmt_1, 0)
 
-        self.xRotation = 0
-        self.yRotation = 0
-        self.zRotation = 0
+        self.xRotation = None
+        self.yRotation = None
+        self.zRotation = None
 
         self.gyro_xOffset = 0
         self.gyro_yOffset = 0
@@ -123,12 +123,8 @@ class IMU():
 
         # Update Time
         tNow = time.time()
-	if self.tLastUpdated is None:
-	    self.tLastUpdated = tNow
-	#else:
-	#     dt = tNow - self.tLastUpdated
-	dt = tNow - self.tLastUpdated
-        #if dt > threshLastUpdatedReading: raise ValueError('The last updated reading was over a second ago....)')
+        dt = tNow - self.tLastUpdated
+        if dt > threshLastUpdatedReading: raise('The last updated reading was over a second ago....)')
         self.tLastUpdated = tNow
 
         gyro_xScaled, gyro_yScaled, gyro_zScaled, accel_xScaled, accel_yScaled, accel_zScaled \
