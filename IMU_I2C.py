@@ -101,8 +101,15 @@ class IMU():
     # Read all raw data from IMU & Compass
     def get_Data(self):
 
-        raw_gyro_data = self.bus.read_i2c_block_data(self.address, addr_gyro, 6)
-        raw_accel_data = self.bus.read_i2c_block_data(self.address, addr_accel, 6)
+        raw_gyro_data = None
+        raw_accel_data = None
+	
+	while raw_gyro_data is None and raw_accel_data is None:
+	   try:
+               raw_gyro_data = self.bus.read_i2c_block_data(self.address, addr_gyro, 6)
+               raw_accel_data = self.bus.read_i2c_block_data(self.address, addr_accel, 6)
+           except:
+	       pass
 
         gyro_xScaled = twos_compliment((raw_gyro_data[0] << 8) + raw_gyro_data[1]) / gyro_scale
         gyro_yScaled = twos_compliment((raw_gyro_data[2] << 8) + raw_gyro_data[3]) / gyro_scale
