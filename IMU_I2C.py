@@ -130,11 +130,11 @@ class IMU():
 
         # Update Time
         tNow = time.time()
-    if self.tLastUpdated is None:
-        self.tLastUpdated = tNow
-    #else:
-	#     dt = tNow - self.tLastUpdated
-	dt = tNow - self.tLastUpdated
+        if self.tLastUpdated is None:
+            self.tLastUpdated = tNow
+        #else:
+        #     dt = tNow - self.tLastUpdated
+        dt = tNow - self.tLastUpdated
         #if dt > threshLastUpdatedReading: raise ValueError('The last updated reading was over a second ago....)')
         self.tLastUpdated = tNow
 
