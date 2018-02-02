@@ -4,8 +4,7 @@ from common import *
 import smbus
 import time
 import curses
-
-
+import time
 
 ########################################################################################################################
 # SPECIFICATION OF MPU6050 IMU SENSOR
@@ -29,6 +28,10 @@ gyro_scale = 131.0
 accel_scale = 16384.0
 threshLastUpdatedReading = 1       # Signal error if the last reading was taken more than 5 seconds ago..
 
+# DeadZones
+accel_deadzone = 8
+gyro_deadzone = 1
+
 ########################################################################################################################
 # KALMAN'S FILTER SETTINGS
 ########################################################################################################################
@@ -49,6 +52,10 @@ class IMU():
         self.xRotation = 0
         self.yRotation = 0
         self.zRotation = 0
+
+        self.accel_xOffset = 0
+        self.accel_yOffset = 0
+        self.accel_zOffset = 0
 
         self.gyro_xOffset = 0
         self.gyro_yOffset = 0
@@ -123,9 +130,9 @@ class IMU():
 
         # Update Time
         tNow = time.time()
-	if self.tLastUpdated is None:
-	    self.tLastUpdated = tNow
-	#else:
+    if self.tLastUpdated is None:
+        self.tLastUpdated = tNow
+    #else:
 	#     dt = tNow - self.tLastUpdated
 	dt = tNow - self.tLastUpdated
         #if dt > threshLastUpdatedReading: raise ValueError('The last updated reading was over a second ago....)')
@@ -224,6 +231,79 @@ class IMU():
                 curses.nocbreak()
                 curses.endwin()
 
+    # Calculates the mean values of sensor outputs
+    def calc_MeanSensor(self):
+
+        i = 0; buff_ax = 0; buff_ay=0; buff_az=0; buff_gx=0; buff_gy=0; buff_gz=0
+        buffersize = 1000
+
+        while i < (buffersize+101):
+            gx, gy, gz, ax, ay, az = self.get_Data()
+
+            if i > 100 & i <= (buffersize+101): # First 100 measures are discarded
+                buff_ax = buff_ax + ax
+                buff_ay = buff_ay + ay
+                buff_az = buff_az + az
+                buff_gx = buff_gx + gx
+                buff_gy = buff_gy + gy
+                buff_gz = buff_gz + gz
+
+            if i == (buffersize+100):
+                mean_ax = buff_ax / buffersize
+                mean_ay = buff_ay / buffersize
+                mean_az = buff_az / buffersize
+                mean_gx = buff_gx / buffersize
+                mean_gy = buff_gy / buffersize
+                mean_gz = buff_gz / buffersize
+
+            i+=1
+            time.sleep(.002)
+
+        return mean_gx, mean_gy, mean_gz, mean_ax, mean_ay, mean_az
+
+    def calibration(self):
+        mean_gx, mean_gy, mean_gz, mean_ax, mean_ay, mean_az = self.calc_MeanSensor()
+
+        ax_offset = -mean_ax/8
+        ay_offset = -mean_ay/8
+        az_offset = (accel_scale-mean_az)/8
+
+        gx_offset = -mean_gx/4
+        gy_offset = -mean_gy/4
+        gz_offset = -mean_gz/4
+
+        while True:
+            ready = 0
+            self.accel_xOffset = ax_offset
+            self.accel_yOffset = ay_offset
+            self.accel_zOffset = az_offset
+
+            self.gyro_xOffset = gx_offset
+            self.gyro_yOffset = gy_offset
+            self.gyro_zOffset = gz_offset
+
+            mean_gx, mean_gy, mean_gz, mean_ax, mean_ay, mean_az = self.calc_MeanSensor()
+            print("...")
+
+            if abs(mean_ax) <= accel_deadzone: ready+=1
+            else: ax_offset = ax_offset-mean_ax/accel_deadzone
+
+            if abs(mean_ay) <= accel_deadzone: ready+=1
+            else: ay_offset = ay_offset-mean_ay / accel_deadzone;
+
+            if abs(accel_scale - mean_az) <= accel_deadzone: ready+=1
+            else: az_offset = az_offset+(accel_scale-mean_az) / accel_deadzone
+
+            if abs(mean_gx) <= gyro_deadzone: ready+=1
+            else: gx_offset = gx_offset-mean_gx / (gyro_deadzone+1)
+
+            if abs(mean_gy) <= gyro_deadzone: ready+=1
+            else: gy_offset = gy_offset-mean_gy / (gyro_deadzone+1)
+
+            if abs(mean_gz) <= gyro_deadzone: ready+=1
+            else: gz_offset = gz_offset-mean_gz / (gyro_deadzone+1)
+
+            if ready == 6: break
 
 ########################################################################################################################
 # MAIN / DUMP DATA
@@ -234,5 +314,5 @@ if __name__ == "__main__":
     imu1.display_Data()
 
     while True:
-        imu1.update_KalmanFilter()
+        imu1.readall_KF()
 
