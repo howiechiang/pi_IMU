@@ -37,7 +37,7 @@ def get_CompassBearing(x, y):
     bearing = math.atan2(y, x)
     if bearing < 0:
         bearing += 2 * math.pi
-    return math.degrees(radians)
+    return math.degrees(bearing)
 
 ########################################################################################################################
 # SENSOR COMMUNICATION [I2C]
