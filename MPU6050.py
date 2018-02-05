@@ -8,7 +8,7 @@
 # IMU Register Addresses
 power_mgmt_1 = 0x6b
 
-addr_imu = 0x68
+addr_imu = 0x68                     # Address pin low (GND)
 addr_gyro = 0x43
 addr_accel = 0x3b
 
@@ -28,3 +28,12 @@ threshLastUpdatedReading = 1       # Signal error if the last reading was taken 
 # DeadZones
 accel_deadzone = 8
 gyro_deadzone = 2
+
+
+
+########################################################################################################################
+
+MPU6050_ADDRESS_AD0_LOW = 0x68      # address pin low (GND)
+MPU6050_ADDRESS_AD0_HIGH = 0x69     # address pin high (VCC)
+MPU6050_DEFAULT_ADDRESS = MPU6050_ADDRESS_AD0_LOW
+

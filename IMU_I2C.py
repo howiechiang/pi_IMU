@@ -7,6 +7,8 @@ import time
 import curses
 import time
 
+
+
 ########################################################################################################################
 # KALMAN'S FILTER SETTINGS
 ########################################################################################################################
@@ -16,6 +18,7 @@ time_diff = 0.01
 
 
 class IMU():
+
     def __init__(self, addr):
 
         self.address = addr                 # This is the address value read via the i2cdetect command
@@ -116,10 +119,8 @@ class IMU():
         tNow = time.time()
         if self.tLastUpdated is None:
             self.tLastUpdated = tNow
-        #else:
-        #     dt = tNow - self.tLastUpdated
+
         dt = tNow - self.tLastUpdated
-        #if dt > threshLastUpdatedReading: raise ValueError('The last updated reading was over a second ago....)')
         self.tLastUpdated = tNow
 
         gyro_xScaled, gyro_yScaled, gyro_zScaled, accel_xScaled, accel_yScaled, accel_zScaled \
