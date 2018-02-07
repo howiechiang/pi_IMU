@@ -1,33 +1,13 @@
 #!/usr/bin/python
 
 from common import *
+from MPU6050 import *
 import smbus
 import time
 import curses
+import time
 
 
-
-########################################################################################################################
-# SPECIFICATION OF MPU6050 IMU SENSOR
-########################################################################################################################
-power_mgmt_1 = 0x6b
-
-addr_imu = 0x68
-addr_gyro = 0x43
-addr_accel = 0x3b
-
-addr_x_gyro = addr_gyro             # gyro_xout address is 67
-addr_y_gyro = addr_gyro + 2         # gyro_yout address is 69
-addr_z_gyro = addr_gyro + 4         # gyro_zout address is 71
-
-addr_x_accel = addr_accel           # accel_xout address is 59
-addr_y_accel = addr_accel + 2       # accel_yout address is 61
-addr_z_accel = addr_accel + 4       # accel_zout address is 63
-
-# Sensor Scaling Values
-gyro_scale = 131.0
-accel_scale = 16384.0
-threshLastUpdatedReading = 1       # Signal error if the last reading was taken more than 5 seconds ago..
 
 ########################################################################################################################
 # KALMAN'S FILTER SETTINGS
@@ -38,17 +18,22 @@ time_diff = 0.01
 
 
 class IMU():
+
     def __init__(self, addr):
 
         self.address = addr                 # This is the address value read via the i2cdetect command
-        self.bus = smbus.SMBus(1)           # or bus = smbus.SMBus(1) for Revision 2 boards
+        self.bus = smbus.SMBus(1)           # or bus = smbus.SMBus(1) for Revision 2 Rasp Pi boards
 
-        # Now wake the 6050 up as it starts in sleep mode
+        # Wake up the 6050 up as it starts in sleep mode
         self.bus.write_byte_data(addr, power_mgmt_1, 0)
 
         self.xRotation = 0
         self.yRotation = 0
         self.zRotation = 0
+
+        self.accel_xOffset = 0
+        self.accel_yOffset = 0
+        self.accel_zOffset = 0
 
         self.gyro_xOffset = 0
         self.gyro_yOffset = 0
@@ -60,56 +45,20 @@ class IMU():
     # SENSOR COMMUNICATION [I2C]
     ####################################################################################################################
 
-    # # Reads data from sensor's registers
-    # def read_byte(self, adr):
-    #
-    #     try:
-    #        return self.bus.read_byte_data(self.address, adr)
-    #
-    #     except IOError as err:
-    #         print(err)
-    #
-    # def read_word(self, adr):
-    #
-    #     try:
-    #         high = self.bus.read_byte_data(self.address, adr)
-    #         low = self.bus.read_byte_data(self.address, adr + 1)
-    #         val = (high << 8) + low
-    #         return val
-    #
-    #     except IOError as err:
-    #         print(err)
-    #
-    # # Checks if the value is negative and performs 2's Complement if binary value is negative
-    # def read_word_2c(self, adr):
-    #
-    #     val = self.read_word(adr)
-    #     if (val >= 0x8000):
-    #         return -((65535 - val) + 1)
-    #
-    #     else:
-    #         return val
-    #
-    # # Write data to sensor's registers
-    # def write_byte(self, adr, value):
-    #     try:
-    #         self.bus.write_byte_data(self.address, adr, value)
-    #
-    #     except IOError as err:
-    #         print(err)
-
     # Read all raw data from IMU & Compass
-    def get_Data(self):
+    def getData(self):
 
-        raw_gyro_data = None
-        raw_accel_data = None
-	
-	while raw_gyro_data is None and raw_accel_data is None:
-	   try:
-               raw_gyro_data = self.bus.read_i2c_block_data(self.address, addr_gyro, 6)
-               raw_accel_data = self.bus.read_i2c_block_data(self.address, addr_accel, 6)
-           except:
-	       pass
+        raw_gyro_data = 0
+        raw_accel_data = 0
+
+        while raw_accel_data == 0 & raw_accel_data == 0:
+
+            try:
+                raw_gyro_data = self.bus.read_i2c_block_data(self.address, addr_gyro, 6)
+                raw_accel_data = self.bus.read_i2c_block_data(self.address, addr_accel, 6)
+
+            except IOError as err:
+                print(err)
 
         gyro_xScaled = twos_compliment((raw_gyro_data[0] << 8) + raw_gyro_data[1]) / gyro_scale
         gyro_yScaled = twos_compliment((raw_gyro_data[2] << 8) + raw_gyro_data[3]) / gyro_scale
@@ -123,23 +72,21 @@ class IMU():
 
     # Read all raw data and perform Kalman's filter
     # Accelerometer has noise, while the gyro has steady state drift
-    def readall_KF(self):
+    def readallKF(self):
 
         # This reduces the sampling rate of the data request
         time.sleep(time_diff - 0.005)
 
         # Update Time
         tNow = time.time()
-	if self.tLastUpdated is None:
-	    self.tLastUpdated = tNow
-	#else:
-	#     dt = tNow - self.tLastUpdated
-	dt = tNow - self.tLastUpdated
-        #if dt > threshLastUpdatedReading: raise ValueError('The last updated reading was over a second ago....)')
+        if self.tLastUpdated is None:
+            self.tLastUpdated = tNow
+
+        dt = tNow - self.tLastUpdated
         self.tLastUpdated = tNow
 
         gyro_xScaled, gyro_yScaled, gyro_zScaled, accel_xScaled, accel_yScaled, accel_zScaled \
-            = self.get_Data()
+            = self.getData()
 
         # Subtract offset from raw gyro data. The offset value is determined during calibration
         gyro_xScaled -= self.gyro_xOffset
@@ -169,26 +116,13 @@ class IMU():
 
         return self.xRotation, self.yRotation, self.zRotation
 
-    def calibrate_imu(self):
-
-        # Read raw gyro & accel data from sensors
-        self.gyro_xOffset, self.gyro_yOffset, self.gyro_zOffset, accel_xScaled, accel_yScaled, accel_zScaled \
-            = self.get_Data()
-
-        # Convert accel data to rotation data
-        self.xRotation = get_x_rotation(accel_xScaled, accel_yScaled, accel_zScaled)
-        self.yRotation = get_y_rotation(accel_xScaled, accel_yScaled, accel_zScaled)
-        self.zRotation = get_z_rotation(accel_xScaled, accel_yScaled, accel_zScaled)
-
-
     # This utilizes curses library which clears refreshes the contents of the carriage on the command line
-    def display_Data(self):
+    def displayData(self):
 
         stdscr = curses.initscr()
 
         while True:
             try:
-
                 stdscr.clear()
 
                 #### GYRO DATA ####
@@ -231,6 +165,82 @@ class IMU():
                 curses.nocbreak()
                 curses.endwin()
 
+    # Calculates the mean values of sensor outputs
+    def calcSensorMean(self):
+
+        i = 0; buff_ax = 0; buff_ay=0; buff_az=0; buff_gx=0; buff_gy=0; buff_gz=0
+        buffersize = 1000
+
+        while i < (buffersize+101):
+            gx, gy, gz, ax, ay, az = self.getData()
+
+            if i > 100 & i <= (buffersize+101): # First 100 measures are discarded
+                buff_ax = buff_ax + ax
+                buff_ay = buff_ay + ay
+                buff_az = buff_az + az
+                buff_gx = buff_gx + gx
+                buff_gy = buff_gy + gy
+                buff_gz = buff_gz + gz
+
+            if i == (buffersize+100):
+                mean_ax = buff_ax / buffersize
+                mean_ay = buff_ay / buffersize
+                mean_az = buff_az / buffersize
+                mean_gx = buff_gx / buffersize
+                mean_gy = buff_gy / buffersize
+                mean_gz = buff_gz / buffersize
+
+            i+=1
+            time.sleep(.002)
+
+        return mean_gx, mean_gy, mean_gz, mean_ax, mean_ay, mean_az
+
+    def calibrateSensor(self):
+        mean_gx, mean_gy, mean_gz, mean_ax, mean_ay, mean_az = self.calcSensorMean()
+
+        ax_offset = -mean_ax/8
+        ay_offset = -mean_ay/8
+        # az_offset = (accel_scale-mean_az)/8
+        az_offset = -mean_az/8
+
+        gx_offset = -mean_gx/4
+        gy_offset = -mean_gy/4
+        gz_offset = -mean_gz/4
+
+        while True:
+            ready = 0
+            self.accel_xOffset = ax_offset
+            self.accel_yOffset = ay_offset
+            self.accel_zOffset = az_offset
+
+            self.gyro_xOffset = gx_offset
+            self.gyro_yOffset = gy_offset
+            self.gyro_zOffset = gz_offset
+
+            mean_gx, mean_gy, mean_gz, mean_ax, mean_ay, mean_az = self.calcSensor_Mean()
+            print("...")
+
+            if abs(mean_ax) <= accel_deadzone: ready+=1
+            else: ax_offset = ax_offset-mean_ax/accel_deadzone
+
+            if abs(mean_ay) <= accel_deadzone: ready+=1
+            else: ay_offset = ay_offset-mean_ay / accel_deadzone;
+
+            # if abs(accel_scale - mean_az) <= accel_deadzone: ready+=1
+            # else: az_offset = az_offset+(accel_scale-mean_az) / accel_deadzone
+            if abs(accel_scale - mean_az) <= accel_deadzone: ready+=1
+            else: az_offset = az_offset+(accel_scale-mean_az) / accel_deadzone
+
+            if abs(mean_gx) <= gyro_deadzone: ready+=1
+            else: gx_offset = gx_offset-mean_gx / (gyro_deadzone+1)
+
+            if abs(mean_gy) <= gyro_deadzone: ready+=1
+            else: gy_offset = gy_offset-mean_gy / (gyro_deadzone+1)
+
+            if abs(mean_gz) <= gyro_deadzone: ready+=1
+            else: gz_offset = gz_offset-mean_gz / (gyro_deadzone+1)
+
+            if ready == 6: break
 
 ########################################################################################################################
 # MAIN / DUMP DATA
@@ -238,8 +248,8 @@ class IMU():
 if __name__ == "__main__":
 
     imu1 = IMU(addr_imu)
-    imu1.display_Data()
+    imu1.calibrateSensor()
+    imu1.displayData()
 
     while True:
-        imu1.update_KalmanFilter()
-
+        imu1.readallKF()
