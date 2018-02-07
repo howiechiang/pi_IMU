@@ -45,44 +45,6 @@ class IMU():
     # SENSOR COMMUNICATION [I2C]
     ####################################################################################################################
 
-    # # Reads data from sensor's registers
-    # def read_byte(self, adr):
-    #
-    #     try:
-    #        return self.bus.read_byte_data(self.address, adr)
-    #
-    #     except IOError as err:
-    #         print(err)
-    #
-    # def read_word(self, adr):
-    #
-    #     try:
-    #         high = self.bus.read_byte_data(self.address, adr)
-    #         low = self.bus.read_byte_data(self.address, adr + 1)
-    #         val = (high << 8) + low
-    #         return val
-    #
-    #     except IOError as err:
-    #         print(err)
-    #
-    # # Checks if the value is negative and performs 2's Complement if binary value is negative
-    # def read_word_2c(self, adr):
-    #
-    #     val = self.read_word(adr)
-    #     if (val >= 0x8000):
-    #         return -((65535 - val) + 1)
-    #
-    #     else:
-    #         return val
-    #
-    # # Write data to sensor's registers
-    # def write_byte(self, adr, value):
-    #     try:
-    #         self.bus.write_byte_data(self.address, adr, value)
-    #
-    #     except IOError as err:
-    #         print(err)
-
     # Read all raw data from IMU & Compass
     def getData(self):
 
@@ -154,18 +116,6 @@ class IMU():
 
         return self.xRotation, self.yRotation, self.zRotation
 
-    def calibrateSensor(self):
-
-        # Read raw gyro & accel data from sensors
-        self.gyro_xOffset, self.gyro_yOffset, self.gyro_zOffset, accel_xScaled, accel_yScaled, accel_zScaled \
-            = self.getData()
-
-        # Convert accel data to rotation data
-        self.xRotation = get_x_rotation(accel_xScaled, accel_yScaled, accel_zScaled)
-        self.yRotation = get_y_rotation(accel_xScaled, accel_yScaled, accel_zScaled)
-        self.zRotation = get_z_rotation(accel_xScaled, accel_yScaled, accel_zScaled)
-
-
     # This utilizes curses library which clears refreshes the contents of the carriage on the command line
     def displayData(self):
 
@@ -173,7 +123,6 @@ class IMU():
 
         while True:
             try:
-
                 stdscr.clear()
 
                 #### GYRO DATA ####
@@ -217,7 +166,7 @@ class IMU():
                 curses.endwin()
 
     # Calculates the mean values of sensor outputs
-    def calcSensor_Mean(self):
+    def calcSensorMean(self):
 
         i = 0; buff_ax = 0; buff_ay=0; buff_az=0; buff_gx=0; buff_gy=0; buff_gz=0
         buffersize = 1000
@@ -246,12 +195,13 @@ class IMU():
 
         return mean_gx, mean_gy, mean_gz, mean_ax, mean_ay, mean_az
 
-    def calibrateSensor_Mean(self):
-        mean_gx, mean_gy, mean_gz, mean_ax, mean_ay, mean_az = self.calcSensor_Mean()
+    def calibrateSensor(self):
+        mean_gx, mean_gy, mean_gz, mean_ax, mean_ay, mean_az = self.calcSensorMean()
 
         ax_offset = -mean_ax/8
         ay_offset = -mean_ay/8
-        az_offset = (accel_scale-mean_az)/8
+        # az_offset = (accel_scale-mean_az)/8
+        az_offset = -mean_az/8
 
         gx_offset = -mean_gx/4
         gy_offset = -mean_gy/4
@@ -276,6 +226,8 @@ class IMU():
             if abs(mean_ay) <= accel_deadzone: ready+=1
             else: ay_offset = ay_offset-mean_ay / accel_deadzone;
 
+            # if abs(accel_scale - mean_az) <= accel_deadzone: ready+=1
+            # else: az_offset = az_offset+(accel_scale-mean_az) / accel_deadzone
             if abs(accel_scale - mean_az) <= accel_deadzone: ready+=1
             else: az_offset = az_offset+(accel_scale-mean_az) / accel_deadzone
 
