@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/pi_IMU.iml" filepath="$PROJECT_DIR$/.idea/pi_IMU.iml" />
-      <module fileurl="file://C:\Users\chianh\Desktop\Coding Sandbox\Python\pi_IMU\.idea\pi_IMU.iml" filepath="C:\Users\chianh\Desktop\Coding Sandbox\Python\pi_IMU\.idea\pi_IMU.iml" />
     </modules>
   </component>
 </project>

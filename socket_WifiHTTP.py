@@ -20,6 +20,6 @@ class index:
 
 if __name__ == "__main__":
 
-    imu1.calibrate_imu()
+    imu1.calibrateSensor()
     app = web.application(urls, globals())
     app.run()
