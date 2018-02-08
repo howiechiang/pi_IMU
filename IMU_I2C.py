@@ -53,7 +53,7 @@ class IMU():
         raw_gyro_data = 0
         raw_accel_data = 0
 
-        while raw_accel_data == 0 & raw_accel_data == 0:
+        while raw_accel_data == 0 and raw_accel_data == 0:
 
             try:
                 raw_accel_data = self.bus.read_i2c_block_data(self.address, addr_accel, 6)
@@ -226,7 +226,7 @@ class IMU():
             self.gyro_yOffset = gy_offset
             self.gyro_zOffset = gz_offset
 
-            mean_gx, mean_gy, mean_gz, mean_ax, mean_ay, mean_az = self.calcSensor_Mean()
+            mean_gx, mean_gy, mean_gz, mean_ax, mean_ay, mean_az = self.calcSensorMean()
             print("...")
 
             if abs(mean_ax) <= accel_deadzone: ready+=1
@@ -237,8 +237,8 @@ class IMU():
 
             # if abs(accel_scale - mean_az) <= accel_deadzone: ready+=1
             # else: az_offset = az_offset+(accel_scale-mean_az) / accel_deadzone
-            if abs(accel_scale - mean_az) <= accel_deadzone: ready+=1
-            else: az_offset = az_offset+(accel_scale-mean_az) / accel_deadzone
+            if abs(mean_az) <= accel_deadzone: ready+=1
+            else: az_offset = az_offset-mean_az / accel_deadzone
 
             if abs(mean_gx) <= gyro_deadzone: ready+=1
             else: gx_offset = gx_offset-mean_gx / (gyro_deadzone+1)
@@ -253,6 +253,7 @@ class IMU():
 
     def getQuaternion(self):
         raw_accel_data, raw_gyro_data = self.getRawData()
+        qI = []
 
         qI[0] = ((raw_accel_data[0] << 8) + raw_accel_data[1]) / accel_scale
         qI[1] = ((raw_accel_data[4] << 8) + raw_accel_data[5]) / accel_scale
@@ -262,6 +263,8 @@ class IMU():
         return qI
 
     def calcGravity(self, qI):
+        g = []
+
         g[0] = 2 * (qI[1] * qI[3] - qI[0] * qI[2])
         g[1] = 2 * (qI[0] * qI[1] + qI[2] * qI[3])
         g[2] = qI[0] * qI[0] - qI[1] * qI[1] - qI[2] * qI[2] +qI[3] * qI[3]
@@ -269,6 +272,8 @@ class IMU():
         return g
 
     def calcEuler_FromQuaternion(self, qI):
+        E = []
+
         E[0] = atan2(2 * qI[1] * qI[2] - 2 * qI[0] * qI[3], 2 * qI[0] * qI[0] + 2 * qI[1] * qI[1] - 1)   # psi
         E[1] = -asin(2 * qI[1] * qI[3] + 2 * qI[0] * qI[2])                                              #thetha
         E[2] = atan2(2 * qI[2] * qI[3] - 2 * qI[0] * qI[1], 2 * qI[0] * qI[0] + 2 * qI[3] * qI[3] - 1)   # phi
@@ -276,6 +281,8 @@ class IMU():
         return E
 
     def calcLinearAccel(self, qI, gravity):
+        v = []
+
         v[0] = qI[1] - gravity[0]
         v[1] = qI[2] - gravity[1]
         v[2] = qI[3] - gravity[2]
@@ -283,6 +290,8 @@ class IMU():
         return v
 
     def calcYawPitchRoll(self, qI, gravity):
+        data = []
+
         data[0] = atan2(2 * qI[1] * qI[2] - 2 * qI[0] * qI[3], 2 * qI[0] * qI[0] + 2 * qI[1] * qI[1] - 1)
         data[1] = atan(gravity[0] / sqrt(gravity[1] * gravity[1] + gravity[2] * gravity[2]))
         data[2] = atan(gravity[1] / sqrt(gravity[0] * gravity[0] + gravity[2] * gravity[2]))
