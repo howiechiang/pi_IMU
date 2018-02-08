@@ -15,7 +15,8 @@ class index:
 
     def GET(self):
 
-        imu1.readall_KF()
+        #imu1.getKalmans()
+        imu1.getEulers()
         return str(imu1.xRotation) + " " + str(imu1.yRotation) + " " + str(imu1.zRotation)
 
 if __name__ == "__main__":

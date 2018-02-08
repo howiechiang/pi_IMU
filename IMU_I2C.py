@@ -2,10 +2,12 @@
 
 from common import *
 from MPU6050 import *
+from math import atan2, asin, atan, sqrt
 import smbus
 import time
 import curses
 import time
+
 
 
 
@@ -46,7 +48,7 @@ class IMU():
     ####################################################################################################################
 
     # Read all raw data from IMU & Compass
-    def getData(self):
+    def getRawData(self):
 
         raw_gyro_data = 0
         raw_accel_data = 0
@@ -54,11 +56,18 @@ class IMU():
         while raw_accel_data == 0 & raw_accel_data == 0:
 
             try:
-                raw_gyro_data = self.bus.read_i2c_block_data(self.address, addr_gyro, 6)
                 raw_accel_data = self.bus.read_i2c_block_data(self.address, addr_accel, 6)
+                raw_gyro_data = self.bus.read_i2c_block_data(self.address, addr_gyro, 6)
 
             except IOError as err:
                 print(err)
+
+        return raw_accel_data, raw_gyro_data
+
+    # get all scaled data from IMU & Compass
+    def getScaledData(self):
+
+        raw_accel_data, raw_gyro_data = self.getRawData()
 
         gyro_xScaled = twos_compliment((raw_gyro_data[0] << 8) + raw_gyro_data[1]) / gyro_scale
         gyro_yScaled = twos_compliment((raw_gyro_data[2] << 8) + raw_gyro_data[3]) / gyro_scale
@@ -72,7 +81,7 @@ class IMU():
 
     # Read all raw data and perform Kalman's filter
     # Accelerometer has noise, while the gyro has steady state drift
-    def readallKF(self):
+    def getKalmans(self):
 
         # This reduces the sampling rate of the data request
         time.sleep(time_diff - 0.005)
@@ -86,7 +95,7 @@ class IMU():
         self.tLastUpdated = tNow
 
         gyro_xScaled, gyro_yScaled, gyro_zScaled, accel_xScaled, accel_yScaled, accel_zScaled \
-            = self.getData()
+            = self.getScaledData()
 
         # Subtract offset from raw gyro data. The offset value is determined during calibration
         gyro_xScaled -= self.gyro_xOffset
@@ -242,6 +251,53 @@ class IMU():
 
             if ready == 6: break
 
+    def getQuaternion(self):
+        raw_accel_data, raw_gyro_data = self.getRawData()
+
+        qI[0] = ((raw_accel_data[0] << 8) + raw_accel_data[1]) / accel_scale
+        qI[1] = ((raw_accel_data[4] << 8) + raw_accel_data[5]) / accel_scale
+        qI[2] = ((raw_gyro_data[0] << 8) + raw_gyro_data[1]) / accel_scale
+        qI[3] = ((raw_gyro_data[4] << 8) + raw_gyro_data[5]) / accel_scale
+
+        return qI
+
+    def calcGravity(self, qI):
+        g[0] = 2 * (qI[1] * qI[3] - qI[0] * qI[2])
+        g[1] = 2 * (qI[0] * qI[1] + qI[2] * qI[3])
+        g[2] = qI[0] * qI[0] - qI[1] * qI[1] - qI[2] * qI[2] +qI[3] * qI[3]
+
+        return g
+
+    def calcEuler_FromQuaternion(self, qI):
+        E[0] = atan2(2 * qI[1] * qI[2] - 2 * qI[0] * qI[3], 2 * qI[0] * qI[0] + 2 * qI[1] * qI[1] - 1)   # psi
+        E[1] = -asin(2 * qI[1] * qI[3] + 2 * qI[0] * qI[2])                                              #thetha
+        E[2] = atan2(2 * qI[2] * qI[3] - 2 * qI[0] * qI[1], 2 * qI[0] * qI[0] + 2 * qI[3] * qI[3] - 1)   # phi
+
+        return E
+
+    def calcLinearAccel(self, qI, gravity):
+        v[0] = qI[1] - gravity[0]
+        v[1] = qI[2] - gravity[1]
+        v[2] = qI[3] - gravity[2]
+
+        return v
+
+    def calcYawPitchRoll(self, qI, gravity):
+        data[0] = atan2(2 * qI[1] * qI[2] - 2 * qI[0] * qI[3], 2 * qI[0] * qI[0] + 2 * qI[1] * qI[1] - 1)
+        data[1] = atan(gravity[0] / sqrt(gravity[1] * gravity[1] + gravity[2] * gravity[2]))
+        data[2] = atan(gravity[1] / sqrt(gravity[0] * gravity[0] + gravity[2] * gravity[2]))
+
+        return data
+
+    def getEulers(self):
+        q = self.getQuaternion()
+        E = self.calcEuler_FromQuaternion(q)
+
+        self.xRotation = E[0]
+        self.yRotation = E[1]
+        self.zRotation = E[2]
+
+
 ########################################################################################################################
 # MAIN / DUMP DATA
 ########################################################################################################################
@@ -249,7 +305,8 @@ if __name__ == "__main__":
 
     imu1 = IMU(addr_imu)
     imu1.calibrateSensor()
-    imu1.displayData()
+    #imu1.getKalmans()
+    imu1.getEulers()
 
     while True:
         imu1.readallKF()
